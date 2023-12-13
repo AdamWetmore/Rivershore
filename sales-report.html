@@ -104,12 +104,14 @@
     <!-- Include JavaScript -->
     <script>
       const salesReportFileInput = document.getElementById('salesReportFile');
+      const productListFileInput = document.getElementById('productListFile');
       const goButton = document.getElementById('goButton');
       const redText = document.getElementById('redText');
+      let useOldProductList = false;
 
       salesReportFileInput.addEventListener('change', function() {
         // Check if a file is selected
-        if (salesReportFileInput.files.length > 0) {
+        if (salesReportIsValid() && productListIsValid()) {
           // Enable the "Go" button with a green background
           goButton.style.backgroundColor = 'green';
           goButton.disabled = false;
@@ -123,6 +125,53 @@
           redText.style.display = 'block';
         }
       });
+      
+      productListFileInput.addEventListener('change', function() {
+        if (useOldProductList === false) {
+          // Check if a file is selected
+          if (productListIsValid() && salesReportIsValid()) {
+            // Enable the "Go" button with a green background
+            goButton.style.backgroundColor = 'green';
+            goButton.disabled = false;
+            // Hide the red text
+            redText.style.display = 'none';
+          } else {
+            // Disable the "Go" button with a grey background
+            goButton.style.backgroundColor = 'grey';
+            goButton.disabled = true;
+            // Show the red text
+            redText.style.display = 'block';
+          }
+        }
+      });
+
+      function salesReportIsValid() {
+        return salesReportFileInput.files.length > 0;
+      }
+
+      function productListIsValid() {
+        if (useOldProductList === true) {
+          return true;
+        } else {
+          return productListFileInput.files.length > 0;
+        }
+      }
+
+      function updateGoButton() {
+        if (salesReportIsValid() && productListIsValid()) {
+          // Enable the "Go" button with a green background
+          goButton.style.backgroundColor = 'green';
+          goButton.disabled = false;
+          // Hide the red text
+          redText.style.display = 'none';
+        } else {
+          // Disable the "Go" button with a grey background
+          goButton.style.backgroundColor = 'grey';
+          goButton.disabled = true;
+          // Show the red text
+          redText.style.display = 'block';
+        }
+      }
 
       function toggleProductList(action) {
           const useOldButton = document.getElementById('useOldButton');
@@ -134,10 +183,14 @@
               // Code to handle 'Use Old' button click
               newProductList.style.display = 'none';
               existingProductList.style.display = 'inline-block';
+              useOldProductList = true;
+              updateGoButton();
           } else if (action === 'addNew') {
               // Code to handle 'Add New' button click
               newProductList.style.display = 'inline-block';
               existingProductList.style.display = 'none';
+              useOldProductList = false;
+              updateGoButton();
             }
       }
     </script>
