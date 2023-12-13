@@ -59,7 +59,6 @@
     </style>
 </head>
 <body>
-
     <!-- Header Section -->
     <header class="development-border">
         <h1>Sales Report</h1>
@@ -87,7 +86,15 @@
             <button id="addNewButton" onclick="toggleProductList('addNew')">Add New</button>
           </div>
       </div>
-    </section>
+
+    <!-- Red Text Element -->
+    <div id="redText" style="color: red; display: inline; font-size: 12px">Please import a sales report before continuing.</div>
+
+    <!-- Go Button -->
+    <div>
+      <button id="goButton" style="background-color: grey; color: white;" disabled>Go</button>
+    </div>
+   </section>
 
     <!-- Result Display Section -->
     <section id="resultSection" class="development-border">
@@ -96,6 +103,27 @@
 
     <!-- Include JavaScript -->
     <script>
+      const salesReportFileInput = document.getElementById('salesReportFile');
+      const goButton = document.getElementById('goButton');
+      const redText = document.getElementById('redText');
+
+      salesReportFileInput.addEventListener('change', function() {
+        // Check if a file is selected
+        if (salesReportFileInput.files.length > 0) {
+          // Enable the "Go" button with a green background
+          goButton.style.backgroundColor = 'green';
+          goButton.disabled = false;
+          // Hide the red text
+          redText.style.display = 'none';
+        } else {
+          // Disable the "Go" button with a grey background
+          goButton.style.backgroundColor = 'grey';
+          goButton.disabled = true;
+          // Show the red text
+          redText.style.display = 'block';
+        }
+      });
+
       function toggleProductList(action) {
           const useOldButton = document.getElementById('useOldButton');
           const addNewButton = document.getElementById('addNewButton');
