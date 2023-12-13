@@ -3,44 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSV Operations</title>
+    <title>Sales Report</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
 
+        /* Temporary development class with a red border */
+        .development-border {
+            border: 1px solid red;
+        }
+
         header {
             text-align: center;
             padding: 10px;
             background-color: #f0f0f0;
+            /* Apply the development border class */
+            /* Remove this line in the production version */
+            margin: 0; /* Remove default margin for the header */
+            /* Apply the development border class */
+            /* Remove this line in the production version */
         }
 
         #fileSection, #resultSection {
             margin-top: 20px;
+            /* Apply the development border class */
+            /* Remove this line in the production version */
+            margin: 0; /* Remove default margin for sections */
+            /* Apply the development border class */
+            /* Remove this line in the production version */
+        }
+
+        .file-input {
+            margin-bottom: 15px;
+        }
+
+        .file-input label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Use flexbox to align elements in the file-input div */
+        #newProductList {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Adjust margin between elements in the newProductList div */
+        #newProductList input,
+        #toggleText,
+        #useOldButton {
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
 
     <!-- Header Section -->
-    <header>
+    <header class="development-border">
         <h1>Sales Report</h1>
     </header>
 
     <!-- File Input Section -->
-    <section id="fileSection">
-        <!-- File Input will be added here -->
+    <section id="fileSection" class="development-border">
+      <h2>Import .csv files from Shopify</h2>
+
+      <!-- Sales Report File Input -->
+      <div class="file-input">
+          <label for="salesReportFile">Sales Report:</label>
+          <input type="file" id="salesReportFile" accept=".csv">
+      </div>
+
+      <!-- Product List File Input and Toggle Buttons -->
+      <div class="file-input" id="productListContainer">
+          <label for="productListFile">Product List:</label>
+          <div id="newProductList">
+            <input type="file" id="productListFile" accept=".csv">
+            <span id="toggleText">or</span>
+            <button id="useOldButton" onclick="toggleProductList('useOld')">Use Old</button>  
+          </div>
+          <div id="existingProductList" style="display: none">
+            <button id="addNewButton" onclick="toggleProductList('addNew')">Add New</button>
+          </div>
+      </div>
     </section>
 
     <!-- Result Display Section -->
-    <section id="resultSection">
+    <section id="resultSection" class="development-border">
         <!-- Result Display will be added here -->
     </section>
 
     <!-- Include JavaScript -->
     <script>
-        // JavaScript code will be added here
+      function toggleProductList(action) {
+          const useOldButton = document.getElementById('useOldButton');
+          const addNewButton = document.getElementById('addNewButton');
+          const newProductList = document.getElementById('newProductList');
+          const existingProductList = document.getElementById('existingProductList');
+
+          if (action === 'useOld') {
+              // Code to handle 'Use Old' button click
+              newProductList.style.display = 'none';
+              existingProductList.style.display = 'inline-block';
+          } else if (action === 'addNew') {
+              // Code to handle 'Add New' button click
+              newProductList.style.display = 'inline-block';
+              existingProductList.style.display = 'none';
+            }
+      }
     </script>
 
 </body>
