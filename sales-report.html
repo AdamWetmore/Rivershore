@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSV Operations</title>
+    <title>Sales Report</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,15 +14,44 @@
             text-align: center;
             padding: 10px;
             background-color: #f0f0f0;
+            /* Apply the development border class */
+            /* Remove this line in the production version */
+            margin: 0; /* Remove default margin for the header */
+            /* Apply the development border class */
+            /* Remove this line in the production version */
         }
 
         #fileSection, #resultSection {
             margin-top: 20px;
+            /* Apply the development border class */
+            /* Remove this line in the production version */
+            margin: 0; /* Remove default margin for sections */
+            /* Apply the development border class */
+            /* Remove this line in the production version */
+        }
+
+        .file-input {
+            margin-bottom: 15px;
+        }
+
+        .file-input label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .result {
+          display: flex;
+          flex-direction: row;
+          margin-bottom: 5px;
+        }
+
+        .result-header {
+          font-weight: bold;
+          margin-right: 5px;
         }
     </style>
 </head>
 <body>
-
     <!-- Header Section -->
     <header>
         <h1>Sales Report</h1>
@@ -30,18 +59,253 @@
 
     <!-- File Input Section -->
     <section id="fileSection">
-        <!-- File Input will be added here -->
-    </section>
+      <h2>Import .csv files from Shopify</h2>
+
+      <!-- Sales Report File Input -->
+      <div class="file-input">
+          <label for="salesReportFile">Sales Report:</label>
+          <input type="file" id="salesReportFile" accept=".csv">
+      </div>
+
+      <!-- Product List File Input and Toggle Buttons -->
+      <div class="file-input" id="productListContainer">
+          <label for="productListFile">Product List:</label>
+          <div id="productList">
+            <input type="file" id="productListFile" accept=".csv">
+          </div>
+      </div>
+
+    <!-- Red Text Element -->
+    <div id="redText" style="color: red; display: inline; font-size: 12px">Please import a Sales Report and Product List from Shopify.</div>
+
+    <!-- Go Button -->
+    <div>
+      <button id="goButton" style="background-color: grey; color: white;" disabled onclick="handleGo()">Go</button>
+    </div>
+   </section>
 
     <!-- Result Display Section -->
     <section id="resultSection">
-        <!-- Result Display will be added here -->
+      <div id="resultsContent" style="display: none;">
+        <h2>Results</h2>
+        <div id="resultList">
+          <div id="fishSales">
+            <div class="result">
+              <span class="result-header">Fish:</span>
+              <span id="Fish"></span>
+            </div>
+          </div>
+          <div id="plantSales">
+            <div class="result">
+              <span class="result-header">Plants:</span>
+              <span id="Plants"></span>
+            </div>
+          </div>
+          <div id="tankSales">
+            <div class="result">
+              <span class="result-header">Tanks:</span>
+              <span id="Tanks"></span>
+            </div>
+          </div>
+          <div id="dryGoodsSales">
+            <div class="result">
+              <span class="result-header">Dry Goods: </span>
+              <span id="DryGoods"></span>
+            </div>
+          </div>
+          <div id="uncategorizedSales">
+            <div class="result">
+              <span class="result-header">Uncategorized:</span>
+              <span id="Uncategorized"></span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Include JavaScript -->
     <script>
-        // JavaScript code will be added here
-    </script>
+      const salesReportFileInput = document.getElementById('salesReportFile');
+      const productListFileInput = document.getElementById('productListFile');
+      const goButton = document.getElementById('goButton');
+      const redText = document.getElementById('redText');
 
-</body>
+      salesReportFileInput.addEventListener('change', function() {
+        // Check if a file is selected
+        if (salesReportIsValid() && productListIsValid()) {
+          // Enable the "Go" button with a green background
+          goButton.style.backgroundColor = 'green';
+          goButton.disabled = false;
+          // Hide the red text
+          redText.style.display = 'none';
+        } else {
+          // Disable the "Go" button with a grey background
+          goButton.style.backgroundColor = 'grey';
+          goButton.disabled = true;
+          // Show the red text
+          redText.style.display = 'block';
+        }
+      });
+      
+      productListFileInput.addEventListener('change', function() {
+        // Check if a file is selected
+        if (productListIsValid() && salesReportIsValid()) {
+          // Enable the "Go" button with a green background
+          goButton.style.backgroundColor = 'green';
+          goButton.disabled = false;
+          // Hide the red text
+          redText.style.display = 'none';
+        } else {
+          // Disable the "Go" button with a grey background
+          goButton.style.backgroundColor = 'grey';
+          goButton.disabled = true;
+          // Show the red text
+          redText.style.display = 'block';
+        }
+      });
+
+      function salesReportIsValid() {
+        return salesReportFileInput.files.length > 0;
+      }
+
+      function productListIsValid() {
+        return productListFileInput.files.length > 0;
+      }
+
+      async function handleGo() {
+        const salesReportFile = salesReportFileInput.files[0];
+        const productListFile = productListFileInput.files[0];
+
+        crunchNumbers(salesReportFile, productListFile);
+      }
+
+      function crunchNumbers(salesReportFile, productListFile) {
+        Promise.all([
+          // Code to crunch the numbers
+          getSalesByProduct(salesReportFile),
+          getProductCategories(productListFile)
+        ])
+        .then(([salesByProductObj, productCategoriesObj]) => {
+          const salesByProduct = salesByProductObj;
+          const productCategories = productCategoriesObj;
+
+          const salesByCategory = {};
+
+          // then calculate the gross sales by category
+          for (const product in salesByProduct) {
+            const category = getCategory(product, productCategories) || 'Uncategorized';
+            const totalSales = salesByProduct[product];
+
+            salesByCategory[category] = (salesByCategory[category] || 0) + totalSales;
+          }
+
+          displayResults(salesByCategory);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+      }
+
+      function getSalesByProduct(salesReportFile) {
+        return new Promise((resolve, reject) => {
+          // Create a FileReader to read the contents of the file
+          const reader = new FileReader();
+          reader.readAsText(salesReportFile);
+          // Set up the onload event to handle file reading completion
+          reader.onload = (event) => {
+            const salesData = event.target.result;
+            const lines = salesData.split('\n');
+            let salesByProduct = {};
+
+            // Loop through each line (excluding the header)
+            for (let i = 1; i < lines.length; i++) {
+              if (lines[i]) {
+                const columns = lines[i].split(',');
+
+                // Extract the product and gross sales columns
+                const product = columns[4].trim();
+                const grossSales = parseFloat(columns[5]);
+                
+                // Update the salesByProduct object
+                if (!isNaN(grossSales)) {
+                  salesByProduct[product] = (salesByProduct[product] || 0) + grossSales;
+                }
+              }
+            }
+            resolve(salesByProduct);
+          };
+
+          // Set up the onerror event to handle any file reading errors
+          reader.onerror = (event) => {
+            alert("error reading sales report file");
+            reject(new Error('Error reading sales report file.'));
+          };
+        });
+      }
+
+      function getProductCategories(productListFile) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsText(productListFile);
+
+          reader.onload = (event) => {
+            const productListData = event.target.result;
+            const productRows = productListData.split('\n').slice(1, -2); // Exclude header row
+
+            let categories = {
+              Fish: [],
+              Plants: [],
+              Tanks: [],
+              Uncategorized: [],
+              DryGoods: [],
+            };
+
+            productRows.forEach((row) => {
+              if (row) {
+                const values = row.split(',');
+
+                const title = values[1]?.trim();
+                const category = values[4]?.trim();
+
+                if (title) {
+                  if (category === '' || category === undefined) {
+                    categories.Uncategorized.push(title);
+                  } else if (category.endsWith('Live Animals')) {
+                    categories.Fish.push(title);
+                  } else if (category.endsWith('Plants')) {
+                    categories.Plants.push(title);
+                  } else if (category.endsWith('Aquariums') || category.endsWith('Aquarium Stands')) {
+                    categories.Tanks.push(title);
+                  } else {
+                    categories.DryGoods.push(title);
+                  }
+                }
+              }
+            });
+            resolve(categories);
+          };
+
+          reader.onerror = (event) => {
+            alert("error reading product list file");
+            reject(new Error('Error reading product list file.'));
+          };
+        });
+      }
+
+      function getCategory(product, productCategories) {
+        return Object.entries(productCategories).find(([category, products]) => products.includes(product))?.[0] || null;
+      }
+
+      function displayResults(salesByCategory) {
+        const resultsSection = document.getElementById('resultsContent');
+        resultsSection.style.display = 'block';
+        // Iterate over each category and append a list item to the list
+        for (const category in salesByCategory) {
+          const resultField = document.getElementById(category);
+          resultField.innerHTML = '';
+          resultField.innerHTML = `$${salesByCategory[category].toFixed(2)}`;
+        }
+      }
+    </script>
+  </body>
 </html>
