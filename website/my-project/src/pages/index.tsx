@@ -11,11 +11,11 @@ export default function Home() {
       <Head>
         <title>Riverhore Aquariums</title>
       </Head>
-      <div className='my-8'>
+      <div>
         <section id='hero'>
           <div
             id='main-lockup'
-            className='content-wrapper z-5 my-32 h-80 text-left'
+            className='content-wrapper z-5 mb-64 mt-32 text-left'
           >
             <h1 className='my-4'>
               Welcome to<div>Rivershore Aquariums</div>
@@ -55,7 +55,7 @@ export default function Home() {
           </div>
         </section>
         <section id='find-us'>
-          <div className='content-wrapper py-10'>
+          <div className='content-wrapper pt-48'>
             <div className='flex items-start justify-center gap-24'>
               <div className='my-2 rounded-lg bg-black p-48 text-center text-white'>
                 Map

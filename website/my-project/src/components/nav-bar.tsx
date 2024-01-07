@@ -9,7 +9,7 @@ function NavBar() {
         id='nav-bar-container'
         className='sticky top-0 z-10 bg-white py-2 shadow-lg'
       >
-        <div className='content-wrapper flex flex-col items-center'>
+        <div className='content-wrapper flex flex-col items-center md:flex-row'>
           <div id='logo' className='mx-8 flex justify-start'>
             <Link href='/'>
               <Image
